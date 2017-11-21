@@ -20,6 +20,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:src="@android:drawable/ic_menu_add"
-        android:onClick="goRegisterDenuncia"/>
+        android:onClick="actualizarDenuncias"/>
 
 </RelativeLayout>

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.cruz.denunciasapp.Models.User;
 import com.cruz.denunciasapp.R;
 import com.cruz.denunciasapp.Services.ApiService;
 import com.cruz.denunciasapp.Services.ApiServiceGenerator;
@@ -42,20 +43,13 @@ public class LoginActivity  extends AppCompatActivity {
         user = (EditText) findViewById(R.id.inp_user);
         pwd = (EditText) findViewById(R.id.inp_password);
 
-
-        //initialize();
-        // username remember
-        final String email = sharedPreferences.getString("email", null);
-        if(email != null){
-            user.setText(email);
-            pwd.requestFocus();
-        }
-
         // islogged remember
         if(sharedPreferences.getBoolean("islogged", false)){
             // Go to Dashboard
-            goDashboard();
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
         }
+
     }
 
     public void goLogin(View view){
@@ -68,27 +62,43 @@ public class LoginActivity  extends AppCompatActivity {
         }
 
         ApiService service = ApiServiceGenerator.createService(ApiService.class);
-        Call<ResponseMessage> call = null;
+        Call<User> call = null;
         call = service.loginUser(username, password);
 
-        call.enqueue(new Callback<ResponseMessage>() {
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 try {
                     int statusCode = response.code();
                     Log.d(TAG, "HTTP status code: " + statusCode);
                     if (response.isSuccessful()) {
-                        ResponseMessage responseMessage = response.body();
-                        Log.d(TAG, "responseMessage: " + responseMessage);
+                        User user1 = response.body();
+                        Log.d(TAG, "responseMessage: " + user1);
+
+                        int id_usuario=user1.getId();
+                        String ussnam=user1.getUsername();
+                        String email=user1.getEmail();
+
+
                         Toast.makeText(LoginActivity.this, "Bienvenido Mr."+username, Toast.LENGTH_LONG).show();
+
                         // Save to SharedPreferences
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         boolean success = editor
-                                .putString("email", username)
+                                .putInt("user-id",user1.getId())
+                                .putString("username", user1.getUsername())
+                                .putString("email", user1.getEmail())
                                 .putBoolean("islogged", true)
                                 .commit();
-                        // Go to Dashboard
-                        goDashboard();
+
+                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                        finish();
+
+                        /*Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        intent.putExtra("usuario_id",id_usuario);
+                        intent.putExtra("username",ussnam);
+                        intent.putExtra("email",email);
+                        startActivity(intent);*/
                     } else {
                         //progressDialog.dismiss();
                         Log.e(TAG, "onError: " + response.errorBody().string());
@@ -105,7 +115,7 @@ public class LoginActivity  extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.toString());
                 Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -116,10 +126,5 @@ public class LoginActivity  extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void goDashboard() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.putExtra("correo",user.getText().toString());
-        startActivity(intent);
-        finish();
-    }
+
 }

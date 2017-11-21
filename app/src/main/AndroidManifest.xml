@@ -50,7 +50,8 @@
 
         <activity
             android:name=".Activities.RegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".Activities.HomeActivity"
+            android:label="Crear Denuncias"
             ></activity>
 
     </application>

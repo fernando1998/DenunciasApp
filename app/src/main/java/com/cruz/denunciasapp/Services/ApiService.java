@@ -26,12 +26,11 @@ public interface ApiService {
 
     String API_BASE_URL = "https://muni-denuncias-fernando19.c9users.io";
 
-    @GET("api/v1/loginUsers")
-    Call<List<User>> getUsers();
+
 
     @FormUrlEncoded
     @POST("api/v1/login")
-    Call<ResponseMessage> loginUser
+    Call<User> loginUser
             (@Field("username")String username,
              @Field("password") String password
             );
@@ -47,22 +46,31 @@ public interface ApiService {
 
     @FormUrlEncoded
     @POST("/api/v1/denuncias")
-    Call<ResponseMessage> createDenuncia(@Field("titulo") String titulo,
+    Call<ResponseMessage> createDenuncia(
+                                         @Field("titulo") String titulo,
                                          @Field("comentario") String comentario,
                                          @Field("latitud") String latitud,
-                                         @Field("longitud") String longitud
+                                         @Field("longitud") String longitud,
+                                         @Field("users_id") String users_id
+
                                          );
 
     @Multipart
     @POST("/api/v1/denuncias")
     Call<ResponseMessage> createDenunciaWithImage(
+
             @Part("titulo") RequestBody titulo,
             @Part("comentario") RequestBody comentario,
             @Part("latitud") RequestBody latitud,
             @Part("longitud") RequestBody longitud,
-            @Part MultipartBody.Part imagen
+            @Part MultipartBody.Part imagen,
+            @Part("users_id") RequestBody users_id
+
     );
 
+
+    @DELETE("/api/v1/denuncias/{id}")
+    Call<ResponseMessage> destroyDenuncia(@Path("id") int id);
 
 
 

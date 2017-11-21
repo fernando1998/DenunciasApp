@@ -2,12 +2,14 @@ package com.cruz.denunciasapp.Activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -44,20 +46,28 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
     private ImageView imagePreview;
-
     private EditText tituloInput;
     private EditText comentarioInput;
-    //private EditText detallesInput;
+    private int user_id;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         imagePreview = (ImageView) findViewById(R.id.imagen_preview);
         tituloInput = (EditText) findViewById(R.id.titulo_input);
         comentarioInput = (EditText) findViewById(R.id.comentario_input);
-     //   detallesInput = (EditText) findViewById(R.id.detalles_input);
+
+
+       user_id=this.getIntent().getExtras().getInt("id_envio");
+        Log.d("id","ID-2:"+user_id );
+
     }
 
     /**
@@ -133,6 +143,9 @@ public class RegisterActivity extends AppCompatActivity {
         String comentario = comentarioInput.getText().toString();
         String latitud = "";
         String longitud = "";
+        String users_id=String.valueOf(user_id);
+
+
 
         if (titulo.isEmpty() || comentario.isEmpty()) {
             Toast.makeText(this, "Titulo y Comentario son campos requeridos", Toast.LENGTH_SHORT).show();
@@ -145,7 +158,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (mediaFileUri == null) {
             // Si no se incluye imagen hacemos un envío POST simple
-            call = service.createDenuncia(titulo, comentario,latitud,longitud );
+            call = service.createDenuncia(titulo, comentario,latitud,longitud,users_id);
+
         } else {
             // Si se incluye hacemos envió en multiparts
 
@@ -171,9 +185,10 @@ public class RegisterActivity extends AppCompatActivity {
             RequestBody comentarioPart = RequestBody.create(MultipartBody.FORM, comentario);
             RequestBody latPart = RequestBody.create(MultipartBody.FORM, latitud);
             RequestBody lonPart = RequestBody.create(MultipartBody.FORM, longitud);
+            RequestBody userPart=RequestBody.create(MultipartBody.FORM, users_id);
 
 
-            call = service.createDenunciaWithImage(tituloPart, comentarioPart,latPart,lonPart, imagenPart);
+            call = service.createDenunciaWithImage(tituloPart, comentarioPart,latPart,lonPart, imagenPart,userPart);
         }
 
         call.enqueue(new Callback<ResponseMessage>() {
@@ -190,8 +205,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d(TAG, "responseMessage: " + responseMessage);
 
                         Toast.makeText(RegisterActivity.this, responseMessage.getMessage(), Toast.LENGTH_LONG).show();
-                        finish();
-
+                        startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     } else {
                         Log.e(TAG, "onError: " + response.errorBody().string());
                         throw new Exception("Error en el servicio");

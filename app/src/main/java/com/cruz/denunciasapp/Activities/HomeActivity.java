@@ -32,52 +32,34 @@ public class HomeActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
 
 
-    private TextView usernameText;
-    private TextView passwordText;
-    private TextView user_txt;
-    private TextView tip;
+    private TextView username_text;
+    private TextView email_text;
+
+    private String user_name;
+    private String email;
+    private int id_usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // id_usuario = this.getIntent().getExtras().getInt("usuario_id");
+        //user_name =this.getIntent().getExtras().getString("username");
+        //email =this.getIntent().getExtras().getString("email");
 
-        usernameText = (TextView)findViewById(R.id.fullname_text);
-        passwordText=(TextView)findViewById(R.id.pass_text);
-        user_txt=(TextView)findViewById(R.id.username_text);
-        tip=(TextView)findViewById(R.id.tip);
 
+        username_text=(TextView)findViewById(R.id.username_text);
+        email_text =(TextView)findViewById(R.id.email_text);
 
         // init SharedPreferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // get username from SharedPreferences
-        String fullname = sharedPreferences.getString("username", null);
+        username_text.setText(sharedPreferences.getString("username", null));
+        email_text.setText(sharedPreferences.getString("email", null));
 
-
-        Log.d(TAG, "username: " + fullname);
-
-      //  User user = UserRepository.getUser(fullname);
-
-        usernameText.setText(sharedPreferences.getString("username", null));
-        passwordText.setText(sharedPreferences.getString("password", null));
-        user_txt.setText(sharedPreferences.getString("email", null));
-        // user_txt.setText(user.getEmail());
-
-
-        //Cambiando estilo de letra demo
-        if(sharedPreferences.getBoolean("islogged", false)){
-
-        }else {
-            startActivity(new Intent(this, LoginActivity.class));
-
-        }
-
-/*
-*/
-        //fin
-
+        id_usuario=sharedPreferences.getInt("user-id",0);
+        Log.d("id","id-Preferences:"+sharedPreferences.getInt("user-id", 0));
 
         // Setear Toolbar como action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -110,21 +92,28 @@ public class HomeActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         boolean success = editor.putBoolean("islogged", false).commit();
                         //        boolean success = editor.clear().commit(); // not recommended
+
                         startActivity(new Intent(HomeActivity.this,LoginActivity.class));
                         finish();
                         break;
 
-                    case R.id.nav_settings:
+                    case R.id.nav_listDenuncia:
 
                         Toast.makeText(HomeActivity.this, "Listar Denuncias...", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HomeActivity.this,MainActivity.class));
+                        Intent inte = new Intent(HomeActivity.this, MainActivity.class);
+
+                        startActivity(inte);
+
                         break;
                     case R.id.nav_createDenuncia:
 
                         Toast.makeText(HomeActivity.this, "Crear Denuncia...", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HomeActivity.this,RegisterActivity.class));
-                        break;
+                        Intent intent = new Intent(HomeActivity.this, RegisterActivity.class);
+                        intent.putExtra("id_envio",id_usuario);
+                        Log.d("id","id-intent:"+id_usuario);
+                        startActivity(intent);
 
+                        break;
                 }
                 // Close drawer
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -135,11 +124,12 @@ public class HomeActivity extends AppCompatActivity {
         // Change navigation header information
         ImageView photoImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.menu_photo);
         TextView fullnameText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.menu_fullname);
-        fullnameText.setText(sharedPreferences.getString("email", null));
+        TextView menu_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.menu_email);
 
+
+        fullnameText.setText(sharedPreferences.getString("username", null));
+        menu_email.setText(sharedPreferences.getString("email", null));
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

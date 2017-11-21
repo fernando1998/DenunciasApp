@@ -13,11 +13,12 @@ public class Denuncia {
     private float lon;
     private String imagen;
     private String estado;
+    private String username;
 
     public Denuncia() {
     }
 
-    public Denuncia(Integer id, String titulo, String comentario, float lat, float lon, String imagen, String estado) {
+    public Denuncia(Integer id, String titulo, String comentario, float lat, float lon, String imagen, String estado, String username) {
         this.id = id;
         this.titulo = titulo;
         this.comentario = comentario;
@@ -25,6 +26,7 @@ public class Denuncia {
         this.lon = lon;
         this.imagen = imagen;
         this.estado = estado;
+        this.username = username;
     }
 
     public Integer getId() {
@@ -83,6 +85,14 @@ public class Denuncia {
         this.estado = estado;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public String toString() {
         return "Denuncia{" +
@@ -93,6 +103,7 @@ public class Denuncia {
                 ", lon=" + lon +
                 ", imagen='" + imagen + '\'' +
                 ", estado='" + estado + '\'' +
+                ", username='" + username + '\'' +
                 '}';
     }
 }

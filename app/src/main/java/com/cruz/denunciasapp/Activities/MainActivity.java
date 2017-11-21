@@ -1,6 +1,8 @@
 package com.cruz.denunciasapp.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView denunciasList;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         denunciasList.setAdapter(new DenunciasAdapter());
 
         initialize();
+
+
     }
     private void initialize() {
 
@@ -59,11 +65,16 @@ public class MainActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
 
                         List<Denuncia> denuncias = response.body();
-                        Log.d(TAG, "productos: " + denuncias);
+                        Log.d(TAG, "denuncias: " + denuncias);
+
 
                         DenunciasAdapter adapter = (DenunciasAdapter) denunciasList.getAdapter();
+
                         adapter.setDenuncias(denuncias);
                         adapter.notifyDataSetChanged();
+
+
+
 
                     } else {
                         Log.e(TAG, "onError: " + response.errorBody().string());
@@ -86,11 +97,22 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-    public void goRegisterDenuncia(View view){
-        Intent intent = new Intent(this,RegisterActivity.class);
-        startActivity(intent);
 
+    private static final int REGISTER_FORM_REQUEST = 100;
 
+    public void actualizarDenuncias(View view){
+        startActivityForResult(new Intent(this, MainActivity.class), REGISTER_FORM_REQUEST);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REGISTER_FORM_REQUEST) {
+            // refresh data
+            initialize();
+        }
+    }
+
+
+
 
 }
